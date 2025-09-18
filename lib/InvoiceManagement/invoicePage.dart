@@ -360,9 +360,23 @@ class _InvoicePageState extends State<InvoicePage> {
     final pdf = pw.Document();
     final pw.TextStyle boldStyle = pw.TextStyle(fontWeight: pw.FontWeight.bold);
     final pw.TextStyle normalStyle = const pw.TextStyle();
-    final pw.TextStyle headerStyle = pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold, color: PdfColors.white);
+    final pw.TextStyle smallStyle = const pw.TextStyle(fontSize: 9); // For address
+    final pw.TextStyle headerStyle =
+    pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold, color: PdfColors.white);
     final PdfColor primaryPdfColor = PdfColor.fromHex("#6C63FF");
     final PdfColor accentPdfColor = PdfColor.fromHex("#4FC3F7");
+
+    // --- 1. Load the logo image ---
+    final ByteData logoData = await rootBundle.load('assets/images/logo.png');
+    final Uint8List logoBytes = logoData.buffer.asUint8List();
+    final pw.ImageProvider logoImage = pw.MemoryImage(logoBytes);
+
+    // --- Define Shop Details ---
+    const String shopName = "Modern Cut";
+    const String shopAddressLine1 = "DC Colony Neelam Block Main Market";
+    const String shopAddressLine2 = "Gujranwala, Pakistan - 12345";
+    const String shopContact = "Ph: (055) 2035111";
+
 
     pdf.addPage(
       pw.MultiPage(
@@ -370,22 +384,59 @@ class _InvoicePageState extends State<InvoicePage> {
         header: (pw.Context context) {
           if (context.pageNumber == 1) {
             return pw.Column(
-                crossAxisAlignment: pw.CrossAxisAlignment.start,
-                children: [
-                  pw.Text("INVOICE", style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold, color: primaryPdfColor)),
-                  pw.SizedBox(height: 5),
-                  pw.Text("Invoice #: $_invoiceNumber", style: boldStyle),
-                  pw.Text("Date: ${DateFormat('dd MMM, yyyy hh:mm a').format(DateTime.now())}", style: normalStyle),
-                  pw.SizedBox(height: 10),
-                  pw.Text("Bill To:", style: boldStyle),
-                  pw.Text(_customerNameController.text.trim(), style: normalStyle),
-                  pw.Divider(height: 20, thickness: 1, color: primaryPdfColor),
-                ]
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                // --- Shop Info and Logo ---
+                pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    pw.Column(
+                      crossAxisAlignment: pw.CrossAxisAlignment.start,
+                      children: [
+                        pw.Text(shopName, style: pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold, color: primaryPdfColor)),
+                        pw.SizedBox(height: 3),
+                        pw.Text(shopAddressLine1, style: smallStyle),
+                        pw.Text(shopAddressLine2, style: smallStyle),
+                        pw.Text(shopContact, style: smallStyle.copyWith(fontSize: 8)),
+                      ],
+                    ),
+                    pw.SizedBox( // Container for the logo
+                      height: 60, // Adjust height as needed
+                      width: 120, // Adjust width as needed
+                      child: pw.Image(logoImage, fit: pw.BoxFit.contain), // Use BoxFit.contain or cover
+                    ),
+                  ],
+                ),
+                pw.SizedBox(height: 20), // Space after shop info
+
+                // --- Invoice Title and Details ---
+                pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      pw.Text("INVOICE", style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold, color: primaryPdfColor.shade(0.8))), // Slightly darker shade for INVOICE text
+                      pw.Column(
+                          crossAxisAlignment: pw.CrossAxisAlignment.end,
+                          children: [
+                            pw.Text("Invoice #: $_invoiceNumber", style: boldStyle),
+                            pw.Text("Date: ${DateFormat('dd MMM, yyyy hh:mm a').format(DateTime.now())}", style: normalStyle),
+                          ]
+                      )
+                    ]
+                ),
+
+
+                pw.SizedBox(height: 15),
+                pw.Text("Bill To:", style: boldStyle),
+                pw.Text(_customerNameController.text.trim(), style: normalStyle),
+                pw.Divider(height: 25, thickness: 1, color: primaryPdfColor),
+              ],
             );
           }
-          return pw.Container();
+          return pw.Container(); // No header for subsequent pages or a simpler one
         },
         build: (pw.Context context) {
+          // --- Items Summary and Totals (Your existing build logic) ---
           return [
             pw.Text("Items Summary", style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold, color: accentPdfColor)),
             pw.SizedBox(height: 10),
@@ -423,8 +474,7 @@ class _InvoicePageState extends State<InvoicePage> {
                   2: const pw.FlexColumnWidth(1.5),
                   3: const pw.FixedColumnWidth(40),
                   4: const pw.FlexColumnWidth(1.5),
-                }
-            ),
+                }),
             pw.SizedBox(height: 15),
             pw.Row(
               mainAxisAlignment: pw.MainAxisAlignment.end,
@@ -444,7 +494,7 @@ class _InvoicePageState extends State<InvoicePage> {
                   ],
                 ),
               ),
-            pw.Divider(color: PdfColors.grey, height:12, thickness: 0.5),
+            pw.Divider(color: PdfColors.grey, height: 12, thickness: 0.5),
             pw.Row(
               mainAxisAlignment: pw.MainAxisAlignment.end,
               children: [
@@ -469,8 +519,7 @@ class _InvoicePageState extends State<InvoicePage> {
 
     await Printing.layoutPdf(
         onLayout: (PdfPageFormat format) async => pdf.save(),
-        name: 'Invoice-$_invoiceNumber.pdf'
-    );
+        name: 'Invoice-$_invoiceNumber.pdf');
   }
 
   @override
