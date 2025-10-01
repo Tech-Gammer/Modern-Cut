@@ -161,17 +161,17 @@ class _LoginPageState extends State<LoginPage> {
                         const SizedBox(height: 16),
                         _buildPasswordField(),
                         const SizedBox(height: 12),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton(
-                            onPressed: _isLoading ? null : _resetPassword,
-                            style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
-                              foregroundColor: primaryColor.withOpacity(0.9),
-                            ),
-                            child: const Text('Forgot Password?'),
-                          ),
-                        ),
+                        // Align(
+                        //   alignment: Alignment.centerRight,
+                        //   child: TextButton(
+                        //     onPressed: _isLoading ? null : _resetPassword,
+                        //     style: TextButton.styleFrom(
+                        //       padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
+                        //       foregroundColor: primaryColor.withOpacity(0.9),
+                        //     ),
+                        //     child: const Text('Forgot Password?'),
+                        //   ),
+                        // ),
                         const SizedBox(height: 24),
                         _isLoading
                             ? const CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(primaryColor))
@@ -180,7 +180,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  _buildSignUpToggle(),
+                  // _buildSignUpToggle(),
                 ],
               ),
             ),

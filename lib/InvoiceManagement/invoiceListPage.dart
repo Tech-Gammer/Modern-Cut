@@ -46,8 +46,6 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
 
     try {
       final ref = FirebaseDatabase.instance.ref("invoices");
-      // Consider ordering by a timestamp field in Firebase if you add one
-      // final snapshot = await ref.orderByChild("createdAtTimestamp").get();
       final snapshot = await ref.get();
 
       if (snapshot.exists && snapshot.value != null) {
@@ -65,22 +63,32 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
             "invoiceNumber": invoice["invoiceNumber"] ?? "N/A",
             "customerName": invoice["customerName"] ?? "N/A",
             "subtotal": (invoice["subtotal"] ?? 0.0).toDouble(),
-            "discountAmount": (invoice["discountAmount"] ?? 0.0).toDouble(), // Add this line
+            "discountAmount": (invoice["discountAmount"] ?? 0.0).toDouble(),
+            "discountIsPercentage": invoice["discountIsPercentage"] ?? false,
+            "discountValue": (invoice["discountValue"] ?? invoice["discountAmount"] ?? 0.0).toDouble(),
+            "commissionAmount": (invoice["commissionAmount"] ?? 0.0).toDouble(),
+            "commissionIsPercentage": invoice["commissionIsPercentage"] ?? false,
+            "commissionValue": (invoice["commissionValue"] ?? invoice["commissionAmount"] ?? 0.0).toDouble(),
+            "employeeId": invoice["employeeId"],
+            "employeeName": invoice["employeeName"],
+            "employeePhone": invoice["employeePhone"],
+            "employeeAddress": invoice["employeeAddress"],
             "total": (invoice["total"] ?? 0.0).toDouble(),
             "createdAt": invoice["createdAt"] ?? DateTime.now().toIso8601String(),
+            "updatedAt": invoice["updatedAt"],
             "items": itemsList,
           };
         }).toList();
 
-        // Sort latest first (ensure createdAt is a valid ISO string)
+        // Sort latest first
         _allInvoices.sort((a, b) {
           try {
             return DateTime.parse(b["createdAt"]).compareTo(DateTime.parse(a["createdAt"]));
           } catch (e) {
-            return 0; // Handle parsing errors if any
+            return 0;
           }
         });
-        _filterInvoices(); // Apply initial filter
+        _filterInvoices();
       } else {
         _allInvoices = [];
         _filteredInvoices = [];
@@ -121,13 +129,49 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
   }
 
   void _navigateToInvoicePage({Map<String, dynamic>? invoiceToEdit}) async {
+    // Prepare the complete invoice data with all necessary fields
+    Map<String, dynamic>? preparedInvoice;
+
+    if (invoiceToEdit != null) {
+      preparedInvoice = {
+        "id": invoiceToEdit["id"],
+        "invoiceNumber": invoiceToEdit["invoiceNumber"],
+        "customerName": invoiceToEdit["customerName"],
+        "items": invoiceToEdit["items"],
+        "subtotal": invoiceToEdit["subtotal"],
+        "discountAmount": invoiceToEdit["discountAmount"] ?? 0.0,
+        "discountIsPercentage": invoiceToEdit["discountIsPercentage"] ?? false,
+        "discountValue": invoiceToEdit["discountValue"] ?? invoiceToEdit["discountAmount"] ?? 0.0,
+        "commissionAmount": invoiceToEdit["commissionAmount"] ?? 0.0,
+        "commissionIsPercentage": invoiceToEdit["commissionIsPercentage"] ?? false,
+        "commissionValue": invoiceToEdit["commissionValue"] ?? invoiceToEdit["commissionAmount"] ?? 0.0,
+        "employeeId": invoiceToEdit["employeeId"],
+        "employeeName": invoiceToEdit["employeeName"],
+        "employeePhone": invoiceToEdit["employeePhone"],
+        "employeeAddress": invoiceToEdit["employeeAddress"],
+        "total": invoiceToEdit["total"],
+        "createdAt": invoiceToEdit["createdAt"],
+        "updatedAt": invoiceToEdit["updatedAt"],
+      };
+
+      print('=== NAVIGATING TO EDIT INVOICE ===');
+      print('Employee ID: ${preparedInvoice["employeeId"]}');
+      print('Employee Name: ${preparedInvoice["employeeName"]}');
+      print('Discount Amount: ${preparedInvoice["discountAmount"]}');
+      print('Discount Is Percentage: ${preparedInvoice["discountIsPercentage"]}');
+      print('Commission Amount: ${preparedInvoice["commissionAmount"]}');
+      print('Commission Is Percentage: ${preparedInvoice["commissionIsPercentage"]}');
+      print('==================================');
+    }
+
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => InvoicePage(invoice: invoiceToEdit),
+        builder: (context) => InvoicePage(invoice: preparedInvoice),
       ),
     );
-    if (result == true && mounted) { // Assuming InvoicePage returns true on save
+
+    if (result == true && mounted) {
       _fetchInvoices();
     }
   }
@@ -183,12 +227,14 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
     try {
       createdAtDate = DateTime.parse(invoice["createdAt"]);
     } catch (e) {
-      createdAtDate = DateTime.now(); // Fallback
+      createdAtDate = DateTime.now();
     }
 
     final double subtotal = (invoice["subtotal"] ?? 0.0).toDouble();
     final double discountAmount = (invoice["discountAmount"] ?? 0.0).toDouble();
+    final double commissionAmount = (invoice["commissionAmount"] ?? 0.0).toDouble();
     final double total = (invoice["total"] ?? 0.0).toDouble();
+    final bool hasEmployee = invoice["employeeId"] != null && invoice["employeeId"].toString().isNotEmpty;
 
     final List<Widget> itemWidgets = (invoice["items"] as List<dynamic>).map((item) {
       final itemName = item["itemName"] ?? "N/A";
@@ -242,6 +288,11 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
                 const SizedBox(height: 8),
                 _buildDetailRow("Customer:", invoice["customerName"] ?? "N/A"),
                 _buildDetailRow("Date:", DateFormat('dd MMM yyyy, hh:mm a').format(createdAtDate)),
+
+                // Show employee info
+                if (hasEmployee)
+                  _buildDetailRow("Employee:", invoice["employeeName"] ?? "N/A"),
+
                 const SizedBox(height: 12),
                 const Text("Items:", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: textColor)),
                 const SizedBox(height: 6),
@@ -251,16 +302,16 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
                     child: Text("No items in this invoice.", style: TextStyle(color: subtleTextColor)),
                   )
                 else
-                  Container(
-                    constraints: BoxConstraints(maxHeight: 200), // Max height for item list
-                    child: ListView(
-                      shrinkWrap: true,
+                  SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: itemWidgets,
                     ),
                   ),
+
                 const Divider(height: 20),
 
-                // Add discount information here
+                // Totals section
                 Align(
                   alignment: Alignment.centerRight,
                   child: Column(
@@ -274,6 +325,11 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
                         Text(
                           "Discount: -Rs.${discountAmount.toStringAsFixed(2)}",
                           style: TextStyle(fontSize: 14, color: errorColor),
+                        ),
+                      if (commissionAmount > 0 && hasEmployee)
+                        Text(
+                          "Commission: Rs.${commissionAmount.toStringAsFixed(2)}",
+                          style: TextStyle(fontSize: 14, color: warningColor),
                         ),
                       const SizedBox(height: 4),
                       Text(
@@ -441,9 +497,12 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
     try {
       createdAtDate = DateTime.parse(invoice["createdAt"]);
     } catch (e) {
-      createdAtDate = DateTime.now(); // Fallback
+      createdAtDate = DateTime.now();
     }
+
     final double discountAmount = (invoice["discountAmount"] ?? 0.0).toDouble();
+    final double commissionAmount = (invoice["commissionAmount"] ?? 0.0).toDouble();
+    final bool hasEmployee = invoice["employeeId"] != null && invoice["employeeId"].toString().isNotEmpty;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
@@ -468,15 +527,59 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
                     "Rs. ${(invoice["total"] ?? 0.0).toStringAsFixed(2)}",
                     style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: successColor),
                   ),
-
                 ],
               ),
-              // if (discountAmount > 0)
-              //   Text(
-              //     "Discount: Rs.${discountAmount.toStringAsFixed(2)}",
-              //     style: TextStyle(fontSize: 12, color: errorColor),
-              //   ),
+
+              // Show employee info if available
+              if (hasEmployee)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4.0),
+                  child: Row(
+                    children: [
+                      Icon(Icons.person, size: 14, color: accentColor),
+                      const SizedBox(width: 4),
+                      Text(
+                        "Employee: ${invoice["employeeName"] ?? "N/A"}",
+                        style: TextStyle(fontSize: 12, color: accentColor, fontWeight: FontWeight.w500),
+                      ),
+                    ],
+                  ),
+                ),
+
+              // Show discount info if available
+              if (discountAmount > 0)
+                Padding(
+                  padding: const EdgeInsets.only(top: 2.0),
+                  child: Row(
+                    children: [
+                      Icon(Icons.local_offer, size: 12, color: errorColor),
+                      const SizedBox(width: 4),
+                      Text(
+                        "Discount: Rs.${discountAmount.toStringAsFixed(2)}",
+                        style: TextStyle(fontSize: 11, color: errorColor),
+                      ),
+                    ],
+                  ),
+                ),
+
+              // Show commission info if available
+              if (commissionAmount > 0 && hasEmployee)
+                Padding(
+                  padding: const EdgeInsets.only(top: 2.0),
+                  child: Row(
+                    children: [
+                      Icon(Icons.percent, size: 12, color: warningColor),
+                      const SizedBox(width: 4),
+                      Text(
+                        "Commission: Rs.${commissionAmount.toStringAsFixed(2)}",
+                        style: TextStyle(fontSize: 11, color: warningColor),
+                      ),
+                    ],
+                  ),
+                ),
+
               const Divider(height: 16, thickness: 0.5),
+
               Row(
                 children: [
                   Icon(Icons.person_outline, size: 16, color: subtleTextColor),

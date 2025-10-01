@@ -41,49 +41,54 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyB8zHjMxbovLMhp-1WxNFbzJO3G-6AEXps',
-    appId: '1:410572987272:web:bb6710968891bc9e83783d',
-    messagingSenderId: '410572987272',
-    projectId: 'saloon-shop-official',
-    authDomain: 'saloon-shop-official.firebaseapp.com',
-    storageBucket: 'saloon-shop-official.firebasestorage.app',
-    measurementId: 'G-JY1J7SM2B9',
-    databaseURL: 'https://saloon-shop-official-default-rtdb.firebaseio.com/'
+    apiKey: 'AIzaSyBfPlRV0mQr5xUW27VjkqUD5qhyowkwaHI',
+    appId: '1:22799517517:web:59a0e9f5f89c21c16a5904',
+    messagingSenderId: '22799517517',
+    projectId: 'modern-cut-org',
+    authDomain: 'modern-cut-org.firebaseapp.com',
+    databaseURL: 'https://modern-cut-org-default-rtdb.firebaseio.com',
+    storageBucket: 'modern-cut-org.firebasestorage.app',
+    measurementId: 'G-LQ35DPYJYF',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAb_ZHGkorEeM7cqBJWMdbyvKBUm5S_Ajo',
-    appId: '1:410572987272:android:183d56833a593a2283783d',
-    messagingSenderId: '410572987272',
-    projectId: 'saloon-shop-official',
-    storageBucket: 'saloon-shop-official.firebasestorage.app',
+    apiKey: 'AIzaSyCbGyO8_qmS5i5nPH537R9HHYNvI7zwS9U',
+    appId: '1:22799517517:android:9214b4e3bfe9f17f6a5904',
+    messagingSenderId: '22799517517',
+    projectId: 'modern-cut-org',
+    databaseURL: 'https://modern-cut-org-default-rtdb.firebaseio.com',
+    storageBucket: 'modern-cut-org.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyA0145sMPn6F55FYjbdQa29Qr_wD9vSDfE',
-    appId: '1:410572987272:ios:80eb8ab590491bc483783d',
-    messagingSenderId: '410572987272',
-    projectId: 'saloon-shop-official',
-    storageBucket: 'saloon-shop-official.firebasestorage.app',
+    apiKey: 'AIzaSyAk_NiY2ThRn73tO4Wim3ToSjHjWmW8XLA',
+    appId: '1:22799517517:ios:2fc414fd74638f726a5904',
+    messagingSenderId: '22799517517',
+    projectId: 'modern-cut-org',
+    databaseURL: 'https://modern-cut-org-default-rtdb.firebaseio.com',
+    storageBucket: 'modern-cut-org.firebasestorage.app',
     iosBundleId: 'com.example.saloon',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyA0145sMPn6F55FYjbdQa29Qr_wD9vSDfE',
-    appId: '1:410572987272:ios:80eb8ab590491bc483783d',
-    messagingSenderId: '410572987272',
-    projectId: 'saloon-shop-official',
-    storageBucket: 'saloon-shop-official.firebasestorage.app',
+    apiKey: 'AIzaSyAk_NiY2ThRn73tO4Wim3ToSjHjWmW8XLA',
+    appId: '1:22799517517:ios:2fc414fd74638f726a5904',
+    messagingSenderId: '22799517517',
+    projectId: 'modern-cut-org',
+    databaseURL: 'https://modern-cut-org-default-rtdb.firebaseio.com',
+    storageBucket: 'modern-cut-org.firebasestorage.app',
     iosBundleId: 'com.example.saloon',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyB8zHjMxbovLMhp-1WxNFbzJO3G-6AEXps',
-    appId: '1:410572987272:web:ccad5a52cae0ce8f83783d',
-    messagingSenderId: '410572987272',
-    projectId: 'saloon-shop-official',
-    authDomain: 'saloon-shop-official.firebaseapp.com',
-    storageBucket: 'saloon-shop-official.firebasestorage.app',
-    measurementId: 'G-MXV5BM758J',
+    apiKey: 'AIzaSyBfPlRV0mQr5xUW27VjkqUD5qhyowkwaHI',
+    appId: '1:22799517517:web:9c9b556664119a106a5904',
+    messagingSenderId: '22799517517',
+    projectId: 'modern-cut-org',
+    authDomain: 'modern-cut-org.firebaseapp.com',
+    databaseURL: 'https://modern-cut-org-default-rtdb.firebaseio.com',
+    storageBucket: 'modern-cut-org.firebasestorage.app',
+    measurementId: 'G-JD3SMZD8T8',
   );
+
 }

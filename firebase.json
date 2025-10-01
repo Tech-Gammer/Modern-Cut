@@ -3,20 +3,20 @@
     "platforms": {
       "android": {
         "default": {
-          "projectId": "saloon-shop-official",
-          "appId": "1:410572987272:android:183d56833a593a2283783d",
+          "projectId": "modern-cut-org",
+          "appId": "1:22799517517:android:9214b4e3bfe9f17f6a5904",
           "fileOutput": "android/app/google-services.json"
         }
       },
       "dart": {
         "lib/firebase_options.dart": {
-          "projectId": "saloon-shop-official",
+          "projectId": "modern-cut-org",
           "configurations": {
-            "android": "1:410572987272:android:183d56833a593a2283783d",
-            "ios": "1:410572987272:ios:80eb8ab590491bc483783d",
-            "macos": "1:410572987272:ios:80eb8ab590491bc483783d",
-            "web": "1:410572987272:web:bb6710968891bc9e83783d",
-            "windows": "1:410572987272:web:ccad5a52cae0ce8f83783d"
+            "android": "1:22799517517:android:9214b4e3bfe9f17f6a5904",
+            "ios": "1:22799517517:ios:2fc414fd74638f726a5904",
+            "macos": "1:22799517517:ios:2fc414fd74638f726a5904",
+            "web": "1:22799517517:web:59a0e9f5f89c21c16a5904",
+            "windows": "1:22799517517:web:9c9b556664119a106a5904"
           }
         }
       }

@@ -3,11 +3,12 @@ import 'package:provider/provider.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fl_chart/fl_chart.dart'; // Changed import
 import 'package:intl/intl.dart';
-
 import 'InvoiceManagement/invoiceListPage.dart';
 import 'ItemManagement/itemsList.dart';
 import 'Providers/authprovider.dart'; // Ensure this path is correct
-import 'VendorManagement/vendorlist.dart'; // Ensure this path is correct
+import 'VendorManagement/vendorlist.dart';
+import 'employee/EmployeeListPage.dart';
+import 'employee/reports.dart'; // Ensure this path is correct
 
 class SalesData {
   final String dateString; // Formatted date string (e.g., "MMM dd") for display
@@ -299,8 +300,8 @@ class _HomePageState extends State<HomePage> {
               GridView.count(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                crossAxisCount: 2,
-                childAspectRatio: 1.15, // Adjusted for better text fit
+                crossAxisCount: 4,
+                childAspectRatio: 1, // Adjusted for better text fit
                 crossAxisSpacing: 16,
                 mainAxisSpacing: 16,
                 children: [
@@ -330,6 +331,26 @@ class _HomePageState extends State<HomePage> {
                     onTap: () {
                       Navigator.push(context, MaterialPageRoute(builder: (context)=>  InvoiceListPage()));
                     },
+                  ),
+                  _buildDashboardCard(
+                    context,
+                    icon: Icons.receipt_long_outlined,
+                    title: "Employee", // Plural
+                    color: const Color(0xFFFF9800),
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>  EmployeeListPage()));
+                    },
+                  ),
+                  _buildDashboardCard(
+                    context,
+                    icon: Icons.receipt_long_outlined,
+                    title: "Commission Reports", // Plural
+                    color: const Color(0xFFFF9800),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const CommissionReportPage()),
+                      );                    },
                   ),
                 ],
               ),
